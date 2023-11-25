@@ -3,17 +3,23 @@ import { PrismaService } from 'src/prisma/prisma.service';
 import { CreateUserDTO } from './dto/create-user.dto';
 import { UpdatePutUserDTO } from './dto/update-put-user.dto';
 import { UpdatePatchUserDTO } from './dto/update-patch-user.dto';
+import * as bcrypt from 'bcrypt';
 
 @Injectable()
 export class UserService {
   constructor(private readonly prismaService: PrismaService) {}
 
-  public async create({ name, email, password }: CreateUserDTO) {
+  public async create({ name, email, password, birth, role }: CreateUserDTO) {
+    password = await bcrypt.hash(password, await bcrypt.genSalt());
+    let dateBirth = null;
+    if (birth) dateBirth = new Date(birth);
     return this.prismaService.user.create({
       data: {
         name,
         email,
         password,
+        birth: dateBirth,
+        role,
       },
     });
   }
@@ -29,9 +35,10 @@ export class UserService {
 
   public async update(
     id: number,
-    { name, email, password, birth }: UpdatePutUserDTO,
+    { name, email, password, birth, role }: UpdatePutUserDTO,
   ) {
     await this.exists(id);
+    password = await bcrypt.hash(password, await bcrypt.genSalt());
     let dateBirth = null;
     if (birth) dateBirth = new Date(birth);
     return this.prismaService.user.update({
@@ -40,6 +47,7 @@ export class UserService {
         email,
         password,
         birth: dateBirth,
+        role,
       },
       where: {
         id,
@@ -49,14 +57,16 @@ export class UserService {
 
   public async updatePartial(
     id: number,
-    { name, email, password, birth }: UpdatePatchUserDTO,
+    { name, email, password, birth, role }: UpdatePatchUserDTO,
   ) {
     await this.exists(id);
     const data: any = {};
     if (birth) data.birth = new Date(birth);
     if (name) data.name = name;
     if (email) data.email = email;
-    if (password) data.password = password;
+    if (password)
+      data.password = await bcrypt.hash(password, await bcrypt.genSalt());
+    if (role) data.role = role;
     return this.prismaService.user.update({
       data,
       where: {
