@@ -12,12 +12,12 @@ import { PugAdapter } from '@nestjs-modules/mailer/dist/adapters/pug.adapter';
 @Module({
   imports: [
     ConfigModule.forRoot(),
-    /*ThrottlerModule.forRoot([
+    ThrottlerModule.forRoot([
       {
         ttl: 60000,
         limit: 100,
       },
-    ]),*/
+    ]),
     forwardRef(() => UserModule),
     forwardRef(() => AuthModule),
     MailerModule.forRoot({
@@ -44,10 +44,10 @@ import { PugAdapter } from '@nestjs-modules/mailer/dist/adapters/pug.adapter';
   controllers: [AppController],
   providers: [
     AppService,
-    /*{
+    {
       provide: APP_GUARD,
       useClass: ThrottlerGuard,
-    },*/
+    },
   ],
 })
 export class AppModule {}

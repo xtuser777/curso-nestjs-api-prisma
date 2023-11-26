@@ -20,8 +20,8 @@ import { RoleGuard } from 'src/guards/role.guard';
 import { Roles } from 'src/decorators/role.decorator';
 import { Role } from 'src/enums/role.enum';
 
-//@Roles(Role.Admin)
-@UseGuards(AuthGuard /*, RoleGuard*/)
+@Roles(Role.Admin)
+@UseGuards(AuthGuard, RoleGuard)
 @Controller('users')
 export class UserController {
   constructor(private readonly userService: UserService) {}
@@ -31,7 +31,7 @@ export class UserController {
     return this.userService.create(data);
   }
 
-  //@UseInterceptors(LogInterceptor)
+  @UseInterceptors(LogInterceptor)
   @Get()
   public async index() {
     return this.userService.read();
