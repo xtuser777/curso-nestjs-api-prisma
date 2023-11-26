@@ -51,7 +51,7 @@ export class AuthController {
 
   @Post('reset')
   async reset(@Body() body: AuthResetDTO) {
-    return this.reset(body);
+    return this.authService.reset(body);
   }
 
   @UseInterceptors(FileInterceptor('file'))
